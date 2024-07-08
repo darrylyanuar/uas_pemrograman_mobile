@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Sholat Jakarta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://source.unsplash.com/1600x900/?nature,landscape') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(245, 241, 241, 0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #95d4df;
+        }
+        .prayer-time {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .highlight {
+            color: rgb(255, 246, 246);
+            font-weight: bold;
+        }
+        a {
+            color: #d1b855;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jadwal Sholat Jakarta</h1>
+        <div id="prayer-times">
+            <p>Loading...</p>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Welcome to Do List App</h1>
+        <p>This is a simple planners application for your activity.</p>
+        <a href="main.html">start</a>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        const apiUrl = 'https://bobwatcherx-corsanywhere6.hf.space/https://muslimsalat.com/jakarta.json';
+        const prayerTimesContainer = document.getElementById('prayer-times');
+
+        function fetchPrayerTimes() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const items = data.items[0];
+                    const times = [
+                        { name: 'Fajr', time: items.fajr },
+                        { name: 'Shurooq', time: items.shurooq },
+                        { name: 'Dhuhr', time: items.dhuhr },
+                        { name: 'Asr', time: items.asr },
+                        { name: 'Maghrib', time: items.maghrib },
+                        { name: 'Isha', time: items.isha }
+                    ];
+                    
+                    prayerTimesContainer.innerHTML = '';
+                    times.forEach(prayer => {
+                        const prayerElement = document.createElement('div');
+                        prayerElement.className = 'prayer-time';
+                        prayerElement.innerHTML = `${prayer.name}: ${prayer.time}`;
+                        prayerTimesContainer.appendChild(prayerElement);
+
+                        const currentTime = new Date();
+                        const prayerTime = new Date();
+                        const [hours, minutes] = prayer.time.split(/:| /);
+                        const ampm = prayer.time.split(' ')[1];
+                        prayerTime.setHours(ampm === 'pm' ? parseInt(hours) + 12 : hours);
+                        prayerTime.setMinutes(minutes);
+                        
+                        if (currentTime >= prayerTime) {
+                            prayerElement.classList.add('highlight');
+                        }
+                    });
+                })
+                .catch(error => {
+                    prayerTimesContainer.innerHTML = '<p>Error loading data.</p>';
+                    console.error('Error:', error);
+                });
+        }
+
+        fetchPrayerTimes();
+        setInterval(fetchPrayerTimes, 60000); // Update every minute
+    </script>
+</body>
+</html>
